@@ -65,21 +65,13 @@ A FastAPI service runs on port 8080 serving code execution via MCP. It is starte
 
 ---
 
-## First Prompt
+## Preflight checks
 
-Copy-paste this into Claude Code after launching it (`claude`) to bootstrap your session:
+This file is auto-loaded by Claude Code when launched from `~/sky_workdir/`. Before starting work, run these checks and report any failures:
 
-```
-Read ~/sky_workdir/CLAUDE_VM_README.md to orient yourself.
+1. `ssh -T git@github.com` — confirm GitHub SSH access
+2. `echo $R2_ACCOUNT_ID` — confirm env vars are loaded
+3. `gh auth status` — if not authenticated, run `gh auth login` (GitHub.com → SSH → existing key)
+4. `aws sts get-caller-identity` — if it fails, run `aws sso login --profile=default`
 
-You have access to private GitHub repos via SSH (~/.ssh/id_rsa).
-Environment variables are in ~/.env and already exported in this shell.
-Your memory persists in ~/.claude/ which is shared across all Claude instances via R2.
-
-Before starting any work:
-1. Run `ssh -T git@github.com` to confirm GitHub access
-2. Run `echo $R2_ACCOUNT_ID` to confirm env vars are loaded
-3. Run `gh auth status` to check if gh CLI is authenticated — if not, run `gh auth login`
-
-Then tell me what you'd like to work on.
-```
+Then ask the user what they'd like to work on.

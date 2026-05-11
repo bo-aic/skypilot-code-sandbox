@@ -16,12 +16,12 @@ resources:
   region: us-east-1
   # If you want to use whisper and parakeet a lot use a GPU machine image_id: ami-0f4d5ef8f66860703, accelerators: A10G:1, instance_type: g5.xlarge
   any_of:
-    - instance_type: c6a.8xlarge
-    # c6i.4xlarge
-    # - instance_type: m6in.4xlarge
+    - instance_type: m5n.4xlarge
+    - instance_type: c6i.4xlarge
+    - instance_type: m6in.4xlarge
     # - instance_type: c6in.8xlarge
     # - instance_type: m5n.8xlarge
-    # - instance_type: m5zn.6xlarge
+    - instance_type: m5zn.6xlarge
 
 file_mounts:
   /bucket_data:
@@ -83,10 +83,18 @@ setup: |
   printf '[r2]\ntype = s3\nprovider = Cloudflare\naccess_key_id = %s\nsecret_access_key = %s\nendpoint = %s\n' \
     "$R2_ACCESS_KEY_ID" "$R2_SECRET_ACCESS_KEY" "$R2_ENDPOINT" > ~/.config/rclone/rclone.conf
 
-  # Mount R2 claude-memory/ to ~/.claude/ (persistent shared memory across instances)
+  # Mount R2 claude-memory/ to ~/.claude/ (persistent shared memory + Claude Code OAuth credentials)
   mkdir -p ~/.claude
   grep -qxF 'rclone mount r2:joschkas-clowd/claude-memory ~/.claude --daemon --allow-non-empty --vfs-cache-mode full' ~/.bashrc || \
     echo 'rclone mount r2:joschkas-clowd/claude-memory ~/.claude --daemon --allow-non-empty --vfs-cache-mode full' >> ~/.bashrc
+
+  # Wait for the mount before any interactive shell continues, so `claude` writes
+  # credentials into the R2-backed dir (not the local empty one).
+  grep -qxF '{ for _ in $(seq 1 50); do mountpoint -q ~/.claude && break; sleep 0.1; done; }' ~/.bashrc || \
+    echo '{ for _ in $(seq 1 50); do mountpoint -q ~/.claude && break; sleep 0.1; done; }' >> ~/.bashrc
+
+  # Surface CLAUDE.md from any cwd: symlink workdir copy to $HOME
+  ln -sf ~/sky_workdir/CLAUDE.md ~/CLAUDE.md
 
 run: |
   set -a && source ~/.env && set +a

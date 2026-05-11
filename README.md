@@ -107,36 +107,16 @@ tmux ls
 
 ### Terminal (interactive) 2
 
-On first login, authenticate the `gh` CLI:
+Start Claude Code:
 
 ```bash
-gh auth login
-# Choose: GitHub.com → SSH → use existing key ~/.ssh/id_rsa
-```
-
-Then start Claude Code:
-
-```bash
+cd ~/sky_workdir
 claude
 ```
 
-Paste this first prompt to bootstrap Claude's awareness of the environment:
+`CLAUDE.md` in the workdir is auto-loaded, so Claude knows about the environment and runs the preflight checks (GitHub SSH, env vars, `gh` auth, AWS SSO) on its own — no copy-paste prompt needed.
 
-```text
-Read ~/sky_workdir/CLAUDE_VM_README.md to orient yourself.
-
-You have access to private GitHub repos via SSH (~/.ssh/id_rsa).
-Environment variables are in ~/.env and already exported in this shell.
-Your memory persists in ~/.claude/ which is shared across all Claude instances via R2.
-
-Before starting any work:
-1. Run `aws sso login --profile=default` to authenticate against AWS via SSO
-2. Run `ssh -T git@github.com` to confirm GitHub access
-3. Run `echo $R2_ACCOUNT_ID` to confirm env vars are loaded
-4. Run `gh auth status` to check if gh CLI is authenticated — if not, run `gh auth login`
-
-Then tell me what you'd like to work on.
-```
+**First-time OAuth (once per Claude.ai account):** on the first run, Claude Code prints a login URL. Open it in your local browser (where you're already signed in to claude.ai — Google SSO works as normal), approve, paste the code back. Credentials write to `~/.claude/.credentials.json`, which is R2-backed, so every future VM is pre-authenticated.
 
 ### Browser UI (via SSH tunnel)
 
