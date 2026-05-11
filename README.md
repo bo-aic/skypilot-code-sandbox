@@ -51,7 +51,7 @@ export AUTH_TOKEN=<a-random-string-you-choose>
 ### 3. Launch the VM
 
 ```bash
-sky launch -c joschkas-clowd src/run.yaml --env AUTH_TOKEN=$AUTH_TOKEN --env WANDB_API_KEY=$WANDB_API_KEY
+sky launch -c joschkas-hf-clowd src/run.yaml --env AUTH_TOKEN=$AUTH_TOKEN --env WANDB_API_KEY=$WANDB_API_KEY
 ```
 
 SkyPilot will provision an x86 AWS instance in `us-east-1`, sync your files, and start the API server.
@@ -117,6 +117,10 @@ claude
 `CLAUDE.md` in the workdir is auto-loaded, so Claude knows about the environment and runs the preflight checks (GitHub SSH, env vars, `gh` auth, AWS SSO) on its own — no copy-paste prompt needed.
 
 **First-time OAuth (once per Claude.ai account):** on the first run, Claude Code prints a login URL. Open it in your local browser (where you're already signed in to claude.ai — Google SSO works as normal), approve, paste the code back. Credentials write to `~/.claude/.credentials.json`, which is R2-backed, so every future VM is pre-authenticated.
+
+### One-click launch from VSCode (Remote Explorer)
+
+When connected to the VM through the VSCode Remote Explorer plugin, the setup step installs a **Claude** terminal profile. Open the terminal-dropdown chevron next to the `+` in the terminal panel and pick **Claude** — VSCode drops you into a tmux session named `claude` in `~/sky_workdir/` with Claude Code already running. Detach with `Ctrl+B D`; reopen the **Claude** profile to reattach. Other terminal profiles (default **bash**) stay plain shells for `gh`, `git`, logs, etc.
 
 ### Browser UI (via SSH tunnel)
 

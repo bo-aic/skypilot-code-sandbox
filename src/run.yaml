@@ -96,6 +96,27 @@ setup: |
   # Surface CLAUDE.md from any cwd: symlink workdir copy to $HOME
   ln -sf ~/sky_workdir/CLAUDE.md ~/CLAUDE.md
 
+  # VSCode "Claude" terminal profile (Machine-scoped, applies to all remote workspaces).
+  # Pick "Claude" from the VSCode terminal dropdown to land in a tmux session
+  # running `claude` in ~/sky_workdir/. Default profile stays plain bash.
+  mkdir -p ~/.vscode-server/data/Machine
+  if [ ! -f ~/.vscode-server/data/Machine/settings.json ]; then
+    cat > ~/.vscode-server/data/Machine/settings.json <<'JSON'
+  {
+    "terminal.integrated.profiles.linux": {
+      "Claude": {
+        "path": "bash",
+        "args": ["-lc", "cd ~/sky_workdir && tmux new -A -s claude claude"],
+        "icon": "robot"
+      },
+      "bash": {
+        "path": "bash"
+      }
+    }
+  }
+  JSON
+  fi
+
 run: |
   set -a && source ~/.env && set +a
 
