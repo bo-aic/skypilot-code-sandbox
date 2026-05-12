@@ -124,5 +124,16 @@ run: |
   mkdir -p ~/.claude
   rclone mount r2:joschkas-clowd/claude-memory ~/.claude --daemon --allow-non-empty --vfs-cache-mode full
 
+  # Wait for mount, then install/refresh ai-coustics agent-skills marketplace.
+  # Private repo — uses SSH so it picks up ~/.ssh/id_rsa and the github.com host key
+  # added in setup. Plugin state lands under ~/.claude/ which is R2-backed, so a
+  # fresh VM with a populated R2 bucket already has the skills.
+  for _ in $(seq 1 50); do mountpoint -q ~/.claude && break; sleep 0.1; done
+  export PATH="$HOME/.local/bin:$PATH"
+  if mountpoint -q ~/.claude && command -v claude >/dev/null 2>&1; then
+    claude plugin marketplace add git@github.com:ai-coustics/agent-skills.git 2>/dev/null || true
+    claude plugin install ai-coustics@ai-coustics-agent-skills 2>/dev/null || true
+  fi
+
   fuser -k 8080/tcp || true
   python -m uvicorn api:app --host 0.0.0.0 --workers 4 --loop uvloop --port 8080
