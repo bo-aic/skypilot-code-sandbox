@@ -51,7 +51,7 @@ export AUTH_TOKEN=<a-random-string-you-choose>
 ### 3. Launch the VM
 
 ```bash
-sky launch -c joschkas-hf-clowd src/run.yaml --env AUTH_TOKEN=$AUTH_TOKEN --env WANDB_API_KEY=$WANDB_API_KEY
+sky launch -c joschkas-hf-clowd src/run.yaml --env AUTH_TOKEN=$AUTH_TOKEN --env WANDB_API_KEY=$WANDB_API_KEY --env HF_TOKEN_WRITE=$HF_TOKEN_WRITE
 ```
 
 SkyPilot will provision an x86 AWS instance in `us-east-1`, sync your files, and start the API server.

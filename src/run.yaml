@@ -3,6 +3,7 @@ name: joschkas_clowd
 envs:
   AUTH_TOKEN:
   WANDB_API_KEY: ""
+  HF_TOKEN_WRITE: ""
 
 service:
   readiness_probe:
