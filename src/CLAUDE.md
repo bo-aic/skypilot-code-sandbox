@@ -75,3 +75,17 @@ This file is auto-loaded by Claude Code when launched from `~/sky_workdir/`. Bef
 4. `aws sts get-caller-identity` — if it fails, run `aws sso login --profile=default`
 
 Then ask the user what they'd like to work on.
+
+## Code Quality
+
+Before considering any task done, you MUST run the following checks and fix all errors:
+
+```sh
+uv run ruff check --fix . && uv run ruff format .
+uv run ruff check .
+uv run mypy .
+```
+
+No task is complete while any of these commands report errors.
+
+The project uses [pre-commit](../.pre-commit-config.yaml) to enforce code quality on every commit (ruff format, ruff lint, mypy, uv-sort, uv-lock). It runs automatically during `git commit`.
