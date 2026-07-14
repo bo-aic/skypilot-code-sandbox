@@ -143,6 +143,22 @@
     ],
     "defaultMode": "auto"
   },
+  "enabledPlugins": {
+    "ai-coustics@ai-coustics-agent-skills": true,
+    "skypilot@skypilot": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "skypilot": {
+      "source": {
+        "source": "github",
+        "repo": "skypilot-org/skypilot"
+      }
+    }
+  },
+  "remoteControlAtStartup": true,
   "sandbox": {
     "enabled": true,
     "filesystem": {

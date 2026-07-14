@@ -165,6 +165,8 @@ run: |
   if mountpoint -q ~/.claude && command -v claude >/dev/null 2>&1; then
     claude plugin marketplace add https://github.com/ai-coustics/agent-skills 2>/dev/null || true
     claude plugin install ai-coustics@ai-coustics-agent-skills 2>/dev/null || true
+    claude plugin marketplace add https://github.com/skypilot-org/skypilot 2>/dev/null || true
+    claude plugin install skypilot@skypilot 2>/dev/null || true
   fi
 
   # Claude Code settings (permissions allowlist, sandbox, auto mode) — source of
