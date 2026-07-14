@@ -56,6 +56,33 @@ setup: |
   set -a && source ~/.env && set +a
   gh auth setup-git 2>/dev/null || true
 
+  # Git defaults (adapted from anilkeshwani/dotfiles)
+  git config --global user.name "jj-wohlgemuth"
+  git config --global user.email "joschka.wohlgemuth@ai-coustics.com"
+  git config --global init.defaultBranch main
+  git config --global push.autoSetupRemote true
+  git config --global diff.algorithm histogram
+  git config --global merge.conflictstyle diff3
+
+  # Global gitignore: never commit OS junk or local Claude settings
+  mkdir -p ~/.config/git
+  printf '.DS_Store\n**/.claude/settings.local.json\n' > ~/.config/git/ignore
+
+  # tmux QoL (adapted from anilkeshwani/dotfiles): mouse support, new
+  # splits/windows inherit the current pane's working directory
+  cat > ~/.tmux.conf <<'TMUX'
+  set-option -g mouse on
+  set-option -g history-file ~/.tmux_history
+  bind '"' split-window -c "#{pane_current_path}"
+  bind % split-window -h -c "#{pane_current_path}"
+  bind c new-window -c "#{pane_current_path}"
+  TMUX
+
+  # Terminfo for uv-installed Python TUIs (nvitop etc.): uv's python-build-
+  # standalone bundles an ncurses that misses Debian's terminfo locations
+  grep -qxF 'export TERMINFO_DIRS="/etc/terminfo:/lib/terminfo:/usr/share/terminfo"' ~/.bashrc || \
+    echo 'export TERMINFO_DIRS="/etc/terminfo:/lib/terminfo:/usr/share/terminfo"' >> ~/.bashrc
+
   # Install Claude Code
   curl -fsSL https://claude.ai/install.sh | bash || true
 

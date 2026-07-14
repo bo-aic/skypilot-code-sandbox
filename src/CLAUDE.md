@@ -71,6 +71,20 @@ This file is auto-loaded by Claude Code when launched from `~/sky_workdir/`. Bef
 
 Then ask the user what they'd like to work on.
 
+## Git: prefer rebase over merge
+
+When integrating upstream changes (e.g. bringing `main` into a feature branch), always use `git rebase`, never `git merge`. This applies whether the user asks to "merge in main", "sync with main", "update from main", or similar — interpret these as rebase requests. When a rebase has conflicts, resolve them, `git add`, and `git rebase --continue` — do NOT abort and fall back to `git merge`.
+
+Rationale: keeps branch history linear and the eventual squash-merge clean; `git log --oneline main..HEAD` keeps showing only this branch's actual work.
+
+## File naming: think globally, not just locally
+
+When creating new files (reports, analyses, scripts, plots), pick a name that's clear *outside* the current task — filenames travel into PR descriptions, memory entries, grep results, and R2 buckets long after the parent directory's context is gone.
+
+- Avoid generic names like `REPORT.md`, `findings.md`, `output.csv`, `script.py` even when the directory makes them locally unambiguous.
+- Encode the *topic* in the name, not just the file's role: `silero_vad_calibration.py` beats `calibrate.py`; `wer_el_sweep_dawn_chorus.png` beats `plot.png`.
+- Before settling on a name, ask: "if I saw only this filename in a search result a year from now, would I know what it is?" If not, rename.
+
 ## Code Quality
 
 Before considering any task done, you MUST run the following checks and fix all errors:
