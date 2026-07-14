@@ -156,13 +156,15 @@ run: |
     fi
     rm -rf /tmp/ak-dotfiles
 
-    # visual-explainer skill (nicobailon), pinned to a known-good commit
-    VE_SHA=ade2031cc727f5ee7e4856bcb61a9b0bceda98ed
+    # visual-explainer skill (nicobailon), latest main. The repo has moved the
+    # skill around (root -> plugins/visual-explainer/), so locate SKILL.md.
     rm -rf /tmp/visual-explainer
-    if git clone --quiet https://github.com/nicobailon/visual-explainer.git /tmp/visual-explainer 2>/dev/null && \
-       git -C /tmp/visual-explainer checkout --quiet $VE_SHA; then
-      rm -rf ~/.claude/skills/visual-explainer /tmp/visual-explainer/.git
-      cp -r /tmp/visual-explainer ~/.claude/skills/visual-explainer
+    if git clone --quiet --depth 1 https://github.com/nicobailon/visual-explainer.git /tmp/visual-explainer 2>/dev/null; then
+      ve_src=$(dirname "$(find /tmp/visual-explainer -name SKILL.md -not -path '*/.git/*' | head -1)")
+      if [ -f "$ve_src/SKILL.md" ]; then
+        rm -rf ~/.claude/skills/visual-explainer
+        cp -r "$ve_src" ~/.claude/skills/visual-explainer
+      fi
     fi
     rm -rf /tmp/visual-explainer
   fi
