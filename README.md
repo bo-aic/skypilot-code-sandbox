@@ -50,8 +50,20 @@ export AUTH_TOKEN=<a-random-string-you-choose>
 
 ### 3. Launch the VM
 
+Pick a hardware profile at launch time:
+
 ```bash
-sky launch -c joschkas-hf-clowd src/run.yaml --env AUTH_TOKEN=$AUTH_TOKEN --env WANDB_API_KEY=$WANDB_API_KEY --env HF_TOKEN_WRITE=$HF_TOKEN_WRITE
+./launch.sh claude   # cheap box for Claude Code + the API      (m6i.large, ~$0.10/h)
+./launch.sh data     # many CPUs + high network for data eng    (any_of list in run.yaml)
+./launch.sh gpu      # A10G GPU for whisper/parakeet etc.       (g5.xlarge, ~$1.01/h)
+```
+
+Extra arguments are passed through to `sky launch` (e.g. `-y`). The cluster name defaults to `joschkas-clowd`; override with `CLUSTER=<name> ./launch.sh ...`. To switch an existing cluster to a different profile, `sky down joschkas-clowd` first — all persistent state lives in R2, not on the VM.
+
+Equivalent raw command (the profiles just add `--instance-type`/`--gpus`/`--image-id` overrides):
+
+```bash
+sky launch -c joschkas-clowd src/run.yaml --env AUTH_TOKEN=$AUTH_TOKEN --env WANDB_API_KEY=$WANDB_API_KEY --env HF_TOKEN_WRITE=$HF_TOKEN_WRITE
 ```
 
 SkyPilot will provision an x86 AWS instance in `us-east-1`, sync your files, and start the API server.

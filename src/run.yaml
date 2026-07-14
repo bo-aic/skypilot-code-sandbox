@@ -15,7 +15,9 @@ resources:
   ports: 8080
   cloud: aws
   region: us-east-1
-  # If you want to use whisper and parakeet a lot use a GPU machine image_id: ami-0f4d5ef8f66860703, accelerators: A10G:1, instance_type: g5.xlarge
+  # Default profile: data engineering (many CPUs, high network throughput).
+  # For a cheap Claude box or a GPU machine, launch via ./launch.sh — its
+  # --instance-type/--gpus/--image-id flags override this any_of list.
   any_of:
     - instance_type: m5n.4xlarge
     - instance_type: c6i.4xlarge
