@@ -19,7 +19,11 @@ CLUSTER=${CLUSTER:-joschkas-clowd}
 case "$PROFILE" in
   claude) OVERRIDES=(--instance-type m6i.large) ;;
   data)   OVERRIDES=() ;;  # uses the any_of list in run.yaml
-  gpu)    OVERRIDES=(--instance-type g5.xlarge --gpus A10G:1 --image-id ami-0f4d5ef8f66860703) ;;
+  # NOTE: no custom --image-id here. SkyPilot's default AWS GPU image is
+  # Ubuntu-based with NVIDIA drivers; the once-suggested DLAMI
+  # ami-0f4d5ef8f66860703 is Amazon Linux 2023, which breaks the apt-based
+  # setup script in run.yaml (no claude, no ~/.claude, nothing).
+  gpu)    OVERRIDES=(--instance-type g5.xlarge --gpus A10G:1) ;;
   *) echo "usage: $0 {claude|data|gpu} [extra sky launch args]" >&2; exit 1 ;;
 esac
 
