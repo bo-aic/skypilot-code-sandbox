@@ -54,6 +54,14 @@ setup: |
   mkdir -p ~/.config/git
   printf '.DS_Store\n**/.claude/settings.local.json\n' > ~/.config/git/ignore
 
+  # Pre-commit hook in every clone: the VM starts from fresh clones on each
+  # relaunch, and `pre-commit install` is per-clone — a git template dir
+  # pre-installs the hook at clone time so repo hooks always run.
+  export PATH="$HOME/.local/bin:$PATH"
+  uv tool install pre-commit
+  git config --global init.templateDir ~/.git-template
+  pre-commit init-templatedir ~/.git-template
+
   # tmux QoL (adapted from anilkeshwani/dotfiles): mouse support, new
   # splits/windows inherit the current pane's working directory
   cat > ~/.tmux.conf <<'TMUX'
