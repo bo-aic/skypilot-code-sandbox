@@ -29,8 +29,6 @@ resources:
 file_mounts:
   /bucket_data:
     source: r2://joschkas-clowd/ # or GCS, or Azure Blob Storage, or R2, etc.
-  ~/.ssh/id_rsa: ~/.ssh/id_rsa
-  ~/.ssh/id_rsa.pub: ~/.ssh/id_rsa.pub
   ~/.aws/config: ~/.aws/config
   ~/.env: .env
 
@@ -38,10 +36,6 @@ workdir: src
 
 setup: |
   pip install -r requirements.txt
-
-  # Fix SSH key permissions and add GitHub to known hosts
-  chmod 600 ~/.ssh/id_rsa
-  ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
 
   # Source .env in interactive shells
   grep -qxF 'set -a && source ~/.env && set +a' ~/.bashrc || echo 'set -a && source ~/.env && set +a' >> ~/.bashrc
@@ -56,6 +50,12 @@ setup: |
     sudo apt update && sudo apt install -y gh
   fi
 
+  # Git auth via GH_TOKEN (fine-grained PAT in ~/.env) — no SSH keys on the VM.
+  # gh reads GH_TOKEN from the env; setup-git routes git's HTTPS credentials
+  # through gh, so plain `git push`/`pull` on github.com clones just work.
+  set -a && source ~/.env && set +a
+  gh auth setup-git 2>/dev/null || true
+
   # Install Claude Code
   curl -fsSL https://claude.ai/install.sh | bash || true
 
@@ -67,8 +67,9 @@ setup: |
     rm -rf /tmp/awscliv2.zip /tmp/aws
   fi
 
-  # Install build tools (gcc required for packages like pesq)
-  sudo apt-get update && sudo apt-get install -y gcc build-essential
+  # Install build tools (gcc required for packages like pesq) and bubblewrap
+  # (required by Claude Code's bash sandbox, enabled in claude-settings.json)
+  sudo apt-get update && sudo apt-get install -y gcc build-essential bubblewrap
 
   # Install ffmpeg
   if ! command -v ffmpeg >/dev/null 2>&1; then
@@ -128,14 +129,22 @@ run: |
   rclone mount r2:joschkas-clowd/claude-memory ~/.claude --daemon --allow-non-empty --vfs-cache-mode full
 
   # Wait for mount, then install/refresh ai-coustics agent-skills marketplace.
-  # Private repo — uses SSH so it picks up ~/.ssh/id_rsa and the github.com host key
-  # added in setup. Plugin state lands under ~/.claude/ which is R2-backed, so a
-  # fresh VM with a populated R2 bucket already has the skills.
+  # Private repo — cloned over HTTPS; git credentials come from GH_TOKEN via the
+  # gh credential helper configured in setup. Plugin state lands under ~/.claude/
+  # which is R2-backed, so a fresh VM with a populated R2 bucket already has the
+  # skills.
   for _ in $(seq 1 50); do mountpoint -q ~/.claude && break; sleep 0.1; done
   export PATH="$HOME/.local/bin:$PATH"
   if mountpoint -q ~/.claude && command -v claude >/dev/null 2>&1; then
-    claude plugin marketplace add git@github.com:ai-coustics/agent-skills.git 2>/dev/null || true
+    claude plugin marketplace add https://github.com/ai-coustics/agent-skills 2>/dev/null || true
     claude plugin install ai-coustics@ai-coustics-agent-skills 2>/dev/null || true
+  fi
+
+  # Claude Code settings (permissions allowlist, sandbox, auto mode) — source of
+  # truth is claude-settings.json in this repo; installed into the R2-backed
+  # ~/.claude/ on every boot, so repo edits win over ad-hoc VM edits.
+  if mountpoint -q ~/.claude; then
+    cp ~/sky_workdir/claude-settings.json ~/.claude/settings.json
   fi
 
   # Install personal skills (deslop + excalidraw) and reviewer agents from

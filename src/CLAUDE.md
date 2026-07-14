@@ -23,18 +23,14 @@ source ~/.env
 
 ## GitHub Access
 
-Your SSH key is at `~/.ssh/id_rsa` and has access to private GitHub repositories.
+Auth is token-based: `GH_TOKEN` (a fine-grained PAT) is in `~/.env`, sourced in every shell. There are **no SSH keys on this VM** — always clone over HTTPS (`https://github.com/...`), never `git@github.com:...`. The `gh` CLI picks up `GH_TOKEN` automatically, and git's HTTPS credentials are routed through `gh` (configured via `gh auth setup-git` at VM setup), so plain `git push`/`git pull` work on HTTPS clones.
 
-Git is configured to use it automatically. To verify:
+To verify:
 ```bash
-ssh -T git@github.com
+gh auth status
 ```
 
-For creating pull requests, `gh` CLI is installed. Authenticate once with:
-```bash
-gh auth login
-```
-Choose "GitHub.com" → "SSH" → use existing key at `~/.ssh/id_rsa`.
+The token is scoped to selected repos — if a clone/push fails with 403/404 on a repo you can see on github.com, the token likely doesn't cover that repo; tell the user rather than retrying.
 
 ## Shared Memory
 
@@ -69,10 +65,9 @@ A FastAPI service runs on port 8080 serving code execution via MCP. It is starte
 
 This file is auto-loaded by Claude Code when launched from `~/sky_workdir/`. Before starting work, run these checks and report any failures:
 
-1. `ssh -T git@github.com` — confirm GitHub SSH access
+1. `gh auth status` — confirm GitHub token auth (uses `GH_TOKEN` from `~/.env`)
 2. `echo $R2_ACCOUNT_ID` — confirm env vars are loaded
-3. `gh auth status` — if not authenticated, run `gh auth login` (GitHub.com → SSH → existing key)
-4. `aws sts get-caller-identity` — if it fails, run `aws sso login --profile=default`
+3. `aws sts get-caller-identity` — if it fails, run `aws sso login --profile=default`
 
 Then ask the user what they'd like to work on.
 

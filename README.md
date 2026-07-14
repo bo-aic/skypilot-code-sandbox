@@ -9,7 +9,7 @@ Shared memory across multiple VM instances is backed by Cloudflare R2, so Claude
 ## What the VM provides
 
 - **Claude Code** — runs interactively on the VM or via browser UI tunneled over SSH
-- **GitHub access** — your `~/.ssh/id_rsa` is synced to the VM; clone, push, and open PRs with `gh`
+- **GitHub access** — token-based via a fine-grained PAT (`GH_TOKEN` in `.env`); clone/push over HTTPS and open PRs with `gh`. No SSH keys ever land on the VM.
 - **Shared persistent memory** — `~/.claude/` is mounted from R2, shared across all instances
 - **Environment variables** — your `.env` is synced and sourced automatically in every shell
 - **Code execution API** — FastAPI server on port 8080, usable as an MCP tool from local Claude clients
@@ -37,6 +37,7 @@ R2_SECRET_ACCESS_KEY="..."
 R2_ENDPOINT="https://<account_id>.r2.cloudflarestorage.com"
 HF_TOKEN="..."
 HF_TOKEN_WRITE="..."
+GH_TOKEN="..."   # fine-grained GitHub PAT: Contents + Pull requests read/write on selected repos
 ```
 
 This file is synced to `~/.env` on the VM and sourced automatically.
