@@ -27,10 +27,4 @@ case "$PROFILE" in
   *) echo "usage: $0 {claude|data|gpu} [extra sky launch args]" >&2; exit 1 ;;
 esac
 
-: "${AUTH_TOKEN:?export AUTH_TOKEN first (any random string)}"
-
-exec uv run sky launch -c "$CLUSTER" src/run.yaml "${OVERRIDES[@]}" \
-  --env AUTH_TOKEN="$AUTH_TOKEN" \
-  --env WANDB_API_KEY="${WANDB_API_KEY:-}" \
-  --env HF_TOKEN_WRITE="${HF_TOKEN_WRITE:-}" \
-  "$@"
+exec sky launch -c "$CLUSTER" src/run.yaml "${OVERRIDES[@]}" "$@"

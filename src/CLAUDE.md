@@ -55,12 +55,6 @@ cd ~/sky_workdir
 
 The R2 bucket `joschkas-clowd` is mounted read-write at `/bucket_data`.
 
-## Code Execution Service
-
-A FastAPI service runs on port 8080 serving code execution via MCP. It is started automatically by SkyPilot.
-
----
-
 ## Preflight checks
 
 This file is auto-loaded by Claude Code when launched from `~/sky_workdir/`. Before starting work, run these checks and report any failures:

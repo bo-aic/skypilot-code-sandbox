@@ -1,18 +1,6 @@
 name: joschkas_clowd
 
-envs:
-  AUTH_TOKEN:
-  WANDB_API_KEY: ""
-  HF_TOKEN_WRITE: ""
-
-service:
-  readiness_probe:
-    path: /health
-    headers:
-      Authorization: Bearer $AUTH_TOKEN
-
 resources:
-  ports: 8080
   cloud: aws
   region: us-east-1
   # Default profile: data engineering (many CPUs, high network throughput).
@@ -35,8 +23,6 @@ file_mounts:
 workdir: src
 
 setup: |
-  pip install -r requirements.txt
-
   # Source .env in interactive shells
   grep -qxF 'set -a && source ~/.env && set +a' ~/.bashrc || echo 'set -a && source ~/.env && set +a' >> ~/.bashrc
 
@@ -207,5 +193,4 @@ run: |
     rm -rf /tmp/visual-explainer
   fi
 
-  fuser -k 8080/tcp || true
-  python -m uvicorn api:app --host 0.0.0.0 --workers 4 --loop uvloop --port 8080
+  echo "VM boot complete — SSH in and run claude from ~/sky_workdir"
