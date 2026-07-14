@@ -75,9 +75,13 @@ class SessionPool:
         self.sessions: Dict[str, Dict[str, PooledSession]] = defaultdict(dict)
         self.lock = Lock()
         self.cleanup_task = None
-        self._start_cleanup_task()
 
-    def _start_cleanup_task(self):
+    def start(self):
+        """Start the background cleanup task. Must be called from within a
+        running event loop (e.g. FastAPI's lifespan startup)."""
+        if self.cleanup_task is not None:
+            return
+
         async def cleanup_expired_sessions():
             while True:
                 try:
@@ -234,6 +238,7 @@ async def lifespan(app: FastAPI):
     except ValueError as e:
         logger.error(f"Authentication setup failed: {e}")
         raise
+    session_pool.start()
     yield
     await session_pool.shutdown()
 

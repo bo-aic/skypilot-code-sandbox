@@ -136,5 +136,20 @@ run: |
     claude plugin install ai-coustics@ai-coustics-agent-skills 2>/dev/null || true
   fi
 
+  # Install personal skills from anilkeshwani/dotfiles (deslop + excalidraw).
+  # ~/.claude/skills/ is R2-backed so they persist; re-sync each boot for updates.
+  if mountpoint -q ~/.claude; then
+    rm -rf /tmp/ak-dotfiles
+    if git clone --depth 1 --filter=blob:none --sparse https://github.com/anilkeshwani/dotfiles.git /tmp/ak-dotfiles 2>/dev/null; then
+      git -C /tmp/ak-dotfiles sparse-checkout set home/.claude/skills
+      mkdir -p ~/.claude/skills
+      for s in deslop-code deslop-prose excalidraw; do
+        rm -rf ~/.claude/skills/$s
+        cp -r /tmp/ak-dotfiles/home/.claude/skills/$s ~/.claude/skills/
+      done
+    fi
+    rm -rf /tmp/ak-dotfiles
+  fi
+
   fuser -k 8080/tcp || true
   python -m uvicorn api:app --host 0.0.0.0 --workers 4 --loop uvloop --port 8080
