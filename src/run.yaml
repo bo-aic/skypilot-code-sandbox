@@ -155,6 +155,16 @@ run: |
       done
     fi
     rm -rf /tmp/ak-dotfiles
+
+    # visual-explainer skill (nicobailon), pinned to a known-good commit
+    VE_SHA=ade2031cc727f5ee7e4856bcb61a9b0bceda98ed
+    rm -rf /tmp/visual-explainer
+    if git clone --quiet https://github.com/nicobailon/visual-explainer.git /tmp/visual-explainer 2>/dev/null && \
+       git -C /tmp/visual-explainer checkout --quiet $VE_SHA; then
+      rm -rf ~/.claude/skills/visual-explainer /tmp/visual-explainer/.git
+      cp -r /tmp/visual-explainer ~/.claude/skills/visual-explainer
+    fi
+    rm -rf /tmp/visual-explainer
   fi
 
   fuser -k 8080/tcp || true
