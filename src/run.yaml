@@ -136,16 +136,20 @@ run: |
     claude plugin install ai-coustics@ai-coustics-agent-skills 2>/dev/null || true
   fi
 
-  # Install personal skills from anilkeshwani/dotfiles (deslop + excalidraw).
-  # ~/.claude/skills/ is R2-backed so they persist; re-sync each boot for updates.
+  # Install personal skills (deslop + excalidraw) and reviewer agents from
+  # anilkeshwani/dotfiles. ~/.claude/ is R2-backed so they persist; re-sync
+  # each boot for updates.
   if mountpoint -q ~/.claude; then
     rm -rf /tmp/ak-dotfiles
     if git clone --depth 1 --filter=blob:none --sparse https://github.com/anilkeshwani/dotfiles.git /tmp/ak-dotfiles 2>/dev/null; then
-      git -C /tmp/ak-dotfiles sparse-checkout set home/.claude/skills
-      mkdir -p ~/.claude/skills
+      git -C /tmp/ak-dotfiles sparse-checkout set home/.claude/skills home/.claude/agents
+      mkdir -p ~/.claude/skills ~/.claude/agents
       for s in deslop-code deslop-prose excalidraw; do
         rm -rf ~/.claude/skills/$s
         cp -r /tmp/ak-dotfiles/home/.claude/skills/$s ~/.claude/skills/
+      done
+      for a in architect-reviewer researcher-reviewer senior-mle-reviewer; do
+        cp /tmp/ak-dotfiles/home/.claude/agents/$a.md ~/.claude/agents/
       done
     fi
     rm -rf /tmp/ak-dotfiles
