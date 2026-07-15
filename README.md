@@ -107,6 +107,15 @@ claude
 
 ### One-click launch from VSCode (Remote Explorer)
 
+Open VSCode directly in `~/sky_workdir` on the VM with:
+
+```bash
+./code.sh              # default cluster joschkas-clowd
+./code.sh <cluster>    # any other cluster name
+```
+
+All integrated terminals on the VM also default to `~/sky_workdir` (Machine-scoped `terminal.integrated.cwd`), so no more `cd` after connecting.
+
 When connected to the VM through the VSCode Remote Explorer plugin, the setup step installs a **Claude** terminal profile. Open the terminal-dropdown chevron next to the `+` in the terminal panel and pick **Claude** — VSCode drops you into a tmux session named `claude` in `~/sky_workdir/` with Claude Code already running. Detach with `Ctrl+B D`; reopen the **Claude** profile to reattach. Other terminal profiles (default **bash**) stay plain shells for `gh`, `git`, logs, etc.
 
 ### Browser UI (via SSH tunnel)
