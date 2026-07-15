@@ -44,7 +44,7 @@ This file is synced to `~/.env` on the VM and sourced automatically.
 Pick a hardware profile at launch time:
 
 ```bash
-./launch.sh claude   # cheap box for Claude Code                 (m6i.large, ~$0.10/h)
+./launch.sh claude   # Mac-class box for Claude Code (~M4 Pro)   (c8i.4xlarge, 16 vCPU/32 GB, ~$0.75/h)
 ./launch.sh data     # many CPUs + high network for data eng     (any_of list in run.yaml)
 ./launch.sh gpu      # A10G GPU for whisper/parakeet etc.        (g5.xlarge, ~$1.01/h)
 ```

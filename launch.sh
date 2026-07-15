@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Launch the VM with a hardware profile:
-#   ./launch.sh claude   cheap box, enough for Claude Code + the API   (m6i.large,  ~$0.10/h)
+#   ./launch.sh claude   Mac-class box for Claude Code (~M4 Pro)       (c8i.4xlarge, 16 vCPU/32 GB, ~$0.75/h)
 #   ./launch.sh data     many CPUs + high network for data engineering (any_of list in run.yaml)
-#   ./launch.sh gpu      A10G for whisper/parakeet etc.                (g5.xlarge,  ~$1.01/h)
+#   ./launch.sh gpu      A10G for whisper/parakeet etc.                (g5.xlarge,   ~$1.01/h)
 #
 # Extra args are passed through to `sky launch` (e.g. -y, --use-spot).
 # Cluster name defaults to joschkas-clowd; override with CLUSTER=<name>.
@@ -17,7 +17,7 @@ PROFILE=${1:-}
 CLUSTER=${CLUSTER:-joschkas-clowd}
 
 case "$PROFILE" in
-  claude) OVERRIDES=(--instance-type m6i.large) ;;
+  claude) OVERRIDES=(--instance-type c8i.4xlarge) ;;
   data)   OVERRIDES=() ;;  # uses the any_of list in run.yaml
   # NOTE: no custom --image-id here. SkyPilot's default AWS GPU image is
   # Ubuntu-based with NVIDIA drivers; the once-suggested DLAMI
