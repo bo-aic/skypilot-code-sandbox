@@ -32,8 +32,7 @@ R2_ACCOUNT_ID="..."
 R2_ACCESS_KEY_ID="..."
 R2_SECRET_ACCESS_KEY="..."
 R2_ENDPOINT="https://<account_id>.r2.cloudflarestorage.com"
-HF_TOKEN="..."
-HF_TOKEN_WRITE="..."
+HF_TOKEN="..."   # write-scoped: huggingface_hub reads exactly this name
 GH_TOKEN="..."   # fine-grained GitHub PAT: Contents + Pull requests read/write on selected repos
 ```
 

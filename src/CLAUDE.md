@@ -9,7 +9,7 @@ All secrets and config are in `~/.env`, sourced automatically in every shell ses
 Available variables:
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT` — Cloudflare R2 storage credentials
 - `AIC_SDK_LICENSE`, `AIC_LICENSE_KEY` — ai-coustics SDK license
-- `HF_TOKEN`, `HF_TOKEN_WRITE` — Hugging Face token (write access, ai-coustics org). `huggingface_hub` reads `HF_TOKEN` automatically once the env is sourced. `HF_API_KEY` is dead — if you see it referenced anywhere, it's stale.
+- `HF_TOKEN` — Hugging Face token (write access, ai-coustics org). This is the canonical and only HF variable; `huggingface_hub` reads it automatically once the env is sourced. `HF_API_KEY` and `HF_TOKEN_WRITE` are retired aliases — if you see them referenced anywhere, it's stale; use `HF_TOKEN`.
 
 To verify they are loaded:
 ```bash
