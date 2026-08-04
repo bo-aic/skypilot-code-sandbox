@@ -86,6 +86,8 @@ Useful tmux shortcuts:
 | `Ctrl+B Arrow` | Switch pane |
 | `Ctrl+B [` | Scroll mode (use arrow keys, `Q` to exit) |
 
+Setup writes `~/.tmux.conf` on every launch, so every tmux session on the VM has **mouse mode on** (`set -g mouse on`) — scroll with the wheel, click to select panes, drag borders to resize — plus scrollback history persisted to `~/.tmux_history` and new splits/windows inheriting the current pane's cwd.
+
 List all sessions:
 
 ```bash

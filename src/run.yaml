@@ -72,6 +72,10 @@ setup: |
   bind c new-window -c "#{pane_current_path}"
   TMUX
 
+  # Setup re-runs on relaunch; a tmux server that is already up keeps its old
+  # options, so reload the conf into it explicitly (no-op if none is running).
+  command -v tmux >/dev/null 2>&1 && tmux source-file ~/.tmux.conf 2>/dev/null || true
+
   # Terminfo for uv-installed Python TUIs (nvitop etc.): uv's python-build-
   # standalone bundles an ncurses that misses Debian's terminfo locations
   grep -qxF 'export TERMINFO_DIRS="/etc/terminfo:/lib/terminfo:/usr/share/terminfo"' ~/.bashrc || \
