@@ -207,4 +207,22 @@ run: |
     rm -rf /tmp/visual-explainer
   fi
 
+  # VSCode extensions for the remote server. The code-server binary only exists
+  # after the first VSCode connect, so install in the background once it appears
+  # (waits up to ~2h). --force makes this idempotent; the list below is the
+  # source of truth and additions here land on the next launch.
+  VSCODE_EXTENSIONS="charliermarsh.ruff ms-python.python ms-python.vscode-pylance ms-python.debugpy ms-python.vscode-python-envs redhat.vscode-yaml tamasfe.even-better-toml yzhang.markdown-all-in-one davidanson.vscode-markdownlint mechatroner.rainbow-csv zainchen.json fabiospampinato.vscode-diff ms-vscode.makefile-tools lanly-dev.spectrogram sukumo28.wav-preview xueshiqiao.avprobe techer.open-in-browser twixes.pypi-assistant vscode-aws-console.vscode-aws-console"
+  (
+    for _ in $(seq 1 720); do
+      code_bin=$(ls -d ~/.vscode-server/bin/*/bin/code-server ~/.vscode-server/cli/servers/*/server/bin/code-server 2>/dev/null | head -1)
+      [ -n "$code_bin" ] && break
+      sleep 10
+    done
+    if [ -n "$code_bin" ]; then
+      for ext in $VSCODE_EXTENSIONS; do
+        "$code_bin" --install-extension "$ext" --force 2>/dev/null || echo "vscode ext install failed: $ext"
+      done
+    fi
+  ) &
+
   echo "VM boot complete — SSH in and run claude from ~/sky_workdir"
