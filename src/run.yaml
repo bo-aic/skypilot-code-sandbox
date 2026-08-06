@@ -101,6 +101,19 @@ setup: |
     sudo apt-get install -y ffmpeg
   fi
 
+  # Brand font (Milling Duplex 1mm) for the wer-bar-chart skill plots. The .otf
+  # lives in R2 (not in git — commercial 205TF license); install system-wide and
+  # drop a copy in ~/sky_workdir, which is one of the skill's hardcoded
+  # font-candidate paths.
+  if [ -f /bucket_data/fonts/205TF-Milling-Duplex1mm.otf ]; then
+    mkdir -p ~/.local/share/fonts
+    cp /bucket_data/fonts/205TF-Milling-Duplex1mm.otf ~/.local/share/fonts/
+    fc-cache -f >/dev/null 2>&1 || true
+    cp /bucket_data/fonts/205TF-Milling-Duplex1mm.otf ~/sky_workdir/205TF-Milling-Duplex1mm.otf
+  else
+    echo "WARN: brand font not found at /bucket_data/fonts/205TF-Milling-Duplex1mm.otf"
+  fi
+
   # Install rclone for R2-backed Claude memory
   if ! command -v rclone >/dev/null 2>&1; then
     curl https://rclone.org/install.sh | sudo bash
@@ -164,7 +177,19 @@ run: |
   export PATH="$HOME/.local/bin:$PATH"
   if mountpoint -q ~/.claude && command -v claude >/dev/null 2>&1; then
     claude plugin marketplace add https://github.com/ai-coustics/agent-skills 2>/dev/null || true
-    claude plugin install ai-coustics@ai-coustics-agent-skills 2>/dev/null || true
+    # add is a no-op when the marketplace is already registered, so update
+    # explicitly to pull the latest plugin layout.
+    claude plugin marketplace update ai-coustics-agent-skills 2>/dev/null || true
+    # Since agent-skills #28 the repo is one plugin per skill — the old
+    # umbrella plugin "ai-coustics" no longer exists. Remove any stale install
+    # of it (its cached copy shadows the new per-skill plugins with old code).
+    claude plugin uninstall ai-coustics@ai-coustics-agent-skills 2>/dev/null || true
+    for plugin in aic-eval-dataset aic-wer-run before-after chatterbox-revoice \
+        enhance estimate-snr-brouhaha fetch-sample-audio ffmpeg-audio-toolkit \
+        kokoro score-perceptual-quality transcribe tyto wer-bar-chart word-timestamps; do
+      claude plugin install "$plugin@ai-coustics-agent-skills" 2>/dev/null || \
+        echo "plugin install failed: $plugin"
+    done
     claude plugin marketplace add https://github.com/skypilot-org/skypilot 2>/dev/null || true
     claude plugin install skypilot@skypilot 2>/dev/null || true
   fi
