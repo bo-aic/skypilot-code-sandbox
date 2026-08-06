@@ -27,4 +27,6 @@ case "$PROFILE" in
   *) echo "usage: $0 {claude|data|gpu} [extra sky launch args]" >&2; exit 1 ;;
 esac
 
-exec sky launch -c "$CLUSTER" src/run.yaml "${OVERRIDES[@]}" "$@"
+# ${arr[@]+...} guard: bash 3.2 (macOS default) errors on empty-array
+# expansion under `set -u`, which hits the `data` profile (no overrides).
+exec sky launch -c "$CLUSTER" src/run.yaml ${OVERRIDES[@]+"${OVERRIDES[@]}"} "$@"
